@@ -1,0 +1,49 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ReaderMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加读者记录 -->
+	<insert id="addReader" parameterType="reader">
+		insert into t_reader(readerNo,readerTypeObj,readerName,sex,birthday,telephone,email,qq,address,photo) values 
+		(#{readerNo},#{readerTypeObj.readerTypeId},#{readerName},#{sex},#{birthday},#{telephone},#{email},#{qq},#{address},#{photo})
+	</insert>
+
+	<!-- 按照查询条件分页查询读者记录 -->
+	<select id="queryReader" resultMap="readerMap" >
+		select t_reader.* from t_reader,t_readerType ${where} and t_reader.readerTypeObj = t_readerType.readerTypeId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="readerMap" type="reader">
+        <id property="readerNo" column="readerNo" />
+        <association property="readerTypeObj" column="readerTypeObj" select="com.chengxusheji.mapper.ReaderTypeMapper.getReaderType" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有读者记录 -->
+	<select id="queryReaderList" resultMap="readerMap" >
+		select t_reader.* from t_reader,t_readerType ${where} and t_reader.readerTypeObj = t_readerType.readerTypeId
+	</select>
+
+    <!-- 按照查询条件的读者记录数 -->
+	<select id="queryReaderCount" resultType="int">
+		select count(*) from t_reader,t_readerType ${where} and t_reader.readerTypeObj = t_readerType.readerTypeId
+	</select>
+
+	<!-- 根据主键查询某个读者记录 -->
+	<select id="getReader" parameterType="string" resultMap="readerMap">
+		select * from t_reader where t_reader.readerNo = #{readerNo}
+	</select>
+
+	<!-- 更新读者记录 -->
+	<update id="updateReader" parameterType="reader">
+		update t_reader set readerTypeObj=#{readerTypeObj.readerTypeId},readerName=#{readerName},sex=#{sex},birthday=#{birthday},telephone=#{telephone},email=#{email},qq=#{qq},address=#{address},photo=#{photo} where readerNo = #{readerNo}
+	</update>
+
+	<!-- 删除读者记录 -->
+	<delete id="deleteReader" parameterType="string">
+		delete from t_reader where readerNo=#{readerNo}
+	</delete>
+
+</mapper>

@@ -1,0 +1,48 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ReaderTypeMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加读者类型记录 -->
+	<insert id="addReaderType" parameterType="readerType">
+		insert into t_readerType(readerTypeName,number) values 
+		(#{readerTypeName},#{number})
+	</insert>
+
+	<!-- 按照查询条件分页查询读者类型记录 -->
+	<select id="queryReaderType" resultMap="readerTypeMap" >
+		select t_readerType.* from t_readerType ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="readerTypeMap" type="readerType">
+        <id property="readerTypeId" column="readerTypeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有读者类型记录 -->
+	<select id="queryReaderTypeList" resultMap="readerTypeMap" >
+		select t_readerType.* from t_readerType ${where}
+	</select>
+
+    <!-- 按照查询条件的读者类型记录数 -->
+	<select id="queryReaderTypeCount" resultType="int">
+		select count(*) from t_readerType ${where}
+	</select>
+
+	<!-- 根据主键查询某个读者类型记录 -->
+	<select id="getReaderType" parameterType="int" resultMap="readerTypeMap">
+		select * from t_readerType where t_readerType.readerTypeId = #{readerTypeId}
+	</select>
+
+	<!-- 更新读者类型记录 -->
+	<update id="updateReaderType" parameterType="readerType">
+		update t_readerType set readerTypeName=#{readerTypeName},number=#{number} where readerTypeId = #{readerTypeId}
+	</update>
+
+	<!-- 删除读者类型记录 -->
+	<delete id="deleteReaderType" parameterType="int">
+		delete from t_readerType where readerTypeId=#{readerTypeId}
+	</delete>
+
+</mapper>

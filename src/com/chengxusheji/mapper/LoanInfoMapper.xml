@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.LoanInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加借阅信息记录 -->
+	<insert id="addLoanInfo" parameterType="loanInfo">
+		insert into t_loanInfo(book,reader,borrowDate,returnDate) values 
+		(#{book.barcode},#{reader.readerNo},#{borrowDate},#{returnDate})
+	</insert>
+
+	<!-- 按照查询条件分页查询借阅信息记录 -->
+	<select id="queryLoanInfo" resultMap="loanInfoMap" >
+		select t_loanInfo.* from t_loanInfo,t_book,t_reader ${where} and t_loanInfo.book = t_book.barcode and t_loanInfo.reader = t_reader.readerNo limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="loanInfoMap" type="loanInfo">
+        <id property="loadId" column="loadId" />
+        <association property="book" column="book" select="com.chengxusheji.mapper.BookMapper.getBook" />
+        <association property="reader" column="reader" select="com.chengxusheji.mapper.ReaderMapper.getReader" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有借阅信息记录 -->
+	<select id="queryLoanInfoList" resultMap="loanInfoMap" >
+		select t_loanInfo.* from t_loanInfo,t_book,t_reader ${where} and t_loanInfo.book = t_book.barcode and t_loanInfo.reader = t_reader.readerNo
+	</select>
+
+    <!-- 按照查询条件的借阅信息记录数 -->
+	<select id="queryLoanInfoCount" resultType="int">
+		select count(*) from t_loanInfo,t_book,t_reader ${where} and t_loanInfo.book = t_book.barcode and t_loanInfo.reader = t_reader.readerNo
+	</select>
+
+	<!-- 根据主键查询某个借阅信息记录 -->
+	<select id="getLoanInfo" parameterType="int" resultMap="loanInfoMap">
+		select * from t_loanInfo where t_loanInfo.loadId = #{loadId}
+	</select>
+
+	<!-- 更新借阅信息记录 -->
+	<update id="updateLoanInfo" parameterType="loanInfo">
+		update t_loanInfo set book=#{book.barcode},reader=#{reader.readerNo},borrowDate=#{borrowDate},returnDate=#{returnDate} where loadId = #{loadId}
+	</update>
+
+	<!-- 删除借阅信息记录 -->
+	<delete id="deleteLoanInfo" parameterType="int">
+		delete from t_loanInfo where loadId=#{loadId}
+	</delete>
+
+</mapper>
